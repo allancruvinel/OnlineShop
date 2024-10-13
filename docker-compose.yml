@@ -1,0 +1,50 @@
+version: '3.4'
+
+services:
+  order:
+    image: ${DOCKER_REGISTRY-}order
+    build:
+      context: .
+      dockerfile: Order/Dockerfile
+    ports:
+      - "5001:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+  payment:
+    image: ${DOCKER_REGISTRY-}payment
+    build:
+      context: .
+      dockerfile: Payment/Dockerfile
+    ports:
+      - "5002:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+  stock:
+    image: ${DOCKER_REGISTRY-}stock
+    build:
+      context: .
+      dockerfile: Stock/Dockerfile
+    ports:
+      - "5003:8080"
+    depends_on:
+      - rabbitmq
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
